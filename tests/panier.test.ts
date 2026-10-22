@@ -44,4 +44,23 @@ describe('calculerPanier', () => {
   it('refuse un code inconnu', () => {
     expect(() => calculerPanier({ lignes: [{ ref: 'LIVRE', qte: 1 }], pays: 'FR', code: 'NOEL' })).toThrow();
   });
+
+  // Couplé au catalogue : ce panier vaut exactement 60,00 € après remise.
+  // Si un prix change, l'assertion ci-dessous échoue : reconstruire le panier au seuil.
+  it('offre la livraison quand le sous-total après remise atteint exactement 60,00 €', () => {
+    const r = calculerPanier({
+      lignes: [
+        { ref: 'COFFRET', qte: 1 },
+        { ref: 'TASSES', qte: 1 },
+        { ref: 'LIVRE', qte: 1 },
+      ],
+      pays: 'FR',
+      code: 'FIDELE',
+    });
+    expect(r.sousTotal).toBe(6500);
+    expect(r.remise).toBe(500);
+    expect(r.sousTotal - r.remise).toBe(6000);
+    expect(r.livraison).toBe(0);
+    expect(r.total).toBe(6000);
+  });
 });
