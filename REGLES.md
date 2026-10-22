@@ -4,6 +4,7 @@ Tous les montants sont **TTC, en centimes, en nombres entiers**. 12,50 € s'éc
 
 1. **Sous-total** : la somme des lignes, prix du catalogue × quantité.
 2. **Code promo** : facultatif, un seul par panier.
+
    - `BIENVENUE` : 10 % du sous-total, arrondi au centime inférieur.
    - `FIDELE` : 5,00 €.
      La remise ne peut pas dépasser le sous-total. Un code inconnu est une erreur.
@@ -13,6 +14,7 @@ Tous les montants sont **TTC, en centimes, en nombres entiers**. 12,50 € s'éc
 5. **Premium** : pour un client Premium, la livraison est offerte dès que le sous-total après remise atteint 30,00 € au lieu de 60,00 €. Ce seuil s'applique quel que soit le pays de livraison.
 
    Premium et code promo ne se cumulent pas. Si un client Premium utilise un code promo, on retient la solution la plus avantageuse pour lui, en comparant les deux totaux :
+
    - le code promo appliqué, avec le seuil de livraison normale (60,00 €) ;
    - l'avantage Premium sans code promo, avec le seuil de 30,00 €.
 
