@@ -26,7 +26,7 @@ export function calculerPanier(panier: Panier): Resultat {
   const sousTotal = panier.lignes.reduce((somme, ligne) => somme + prix(ligne.ref) * ligne.qte, 0);
   const remise = calculerRemise(sousTotal, panier.code);
   const apresRemise = sousTotal - remise;
-  const livraison = apresRemise > SEUIL_LIVRAISON_OFFERTE ? 0 : LIVRAISON[panier.pays];
+  const livraison = apresRemise >= SEUIL_LIVRAISON_OFFERTE ? 0 : LIVRAISON[panier.pays];
 
   return { sousTotal, remise, livraison, total: apresRemise + livraison };
 }
