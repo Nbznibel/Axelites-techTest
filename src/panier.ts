@@ -1,7 +1,7 @@
 /** Calcul du total d'un panier. Les règles sont dans REGLES.md. Montants en centimes. */
 
 export type Ligne = { ref: string; qte: number };
-export type Panier = { lignes: Ligne[]; pays: 'FR' | 'EU'; code?: string };
+export type Panier = { lignes: Ligne[]; pays: 'FR' | 'EU'; code?: string; premium?: boolean };
 export type Resultat = { sousTotal: number; remise: number; livraison: number; total: number };
 
 const CATALOGUE: Record<string, number> = {
@@ -19,14 +19,29 @@ const CODES: Record<string, { type: 'pourcent' | 'montant'; valeur: number }> = 
 
 const LIVRAISON = { FR: 490, EU: 990 };
 const SEUIL_LIVRAISON_OFFERTE = 6000;
+const SEUIL_LIVRAISON_OFFERTE_PREMIUM = 3000;
 
 export function calculerPanier(panier: Panier): Resultat {
   if (panier.lignes.length === 0) throw new Error('Panier vide');
 
   const sousTotal = panier.lignes.reduce((somme, ligne) => somme + prix(ligne.ref) * ligne.qte, 0);
-  const remise = calculerRemise(sousTotal, panier.code);
+  const premium = panier.premium === true;
+
+  if (premium && panier.code) {
+    const avecCode = calculerScenario(sousTotal, panier.code, panier.pays, SEUIL_LIVRAISON_OFFERTE);
+    const sansCode = calculerScenario(sousTotal, undefined, panier.pays, SEUIL_LIVRAISON_OFFERTE_PREMIUM);
+
+    return avecCode.total <= sansCode.total ? avecCode : sansCode;
+  }
+
+  const seuil = premium ? SEUIL_LIVRAISON_OFFERTE_PREMIUM : SEUIL_LIVRAISON_OFFERTE;
+  return calculerScenario(sousTotal, panier.code, panier.pays, seuil);
+}
+
+function calculerScenario(sousTotal: number, code: string | undefined, pays: Panier['pays'], seuil: number): Resultat {
+  const remise = calculerRemise(sousTotal, code);
   const apresRemise = sousTotal - remise;
-  const livraison = apresRemise >= SEUIL_LIVRAISON_OFFERTE ? 0 : LIVRAISON[panier.pays];
+  const livraison = apresRemise >= seuil ? 0 : LIVRAISON[pays];
 
   return { sousTotal, remise, livraison, total: apresRemise + livraison };
 }
